@@ -40,6 +40,10 @@ public class Sensorik {
 		this.co2_ppm = ppm;
 	}
 	
+	public void setWindow(boolean openWindow) {
+		this.openWindow = openWindow;
+	}
+	
 	public void simulateOneMinute() throws JMSException {
 		if (openWindow) {
 			co2_ppm = co2_ppm - 100;
