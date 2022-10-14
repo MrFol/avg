@@ -39,7 +39,7 @@ public class Steuerwerk {
 	 */
 	public void simulateOneMinute() throws JMSException {
  		for (int i = 0; i < consumers.size(); i++) {
- 			Message messageConsume = consumers.get(i).receive();
+ 			Message messageConsume = consumers.get(i).receiveNoWait();
  			if (messageConsume instanceof TextMessage) {
  				TextMessage textmessageConsume = (TextMessage) messageConsume;
  				int value = Integer.parseInt(textmessageConsume.getText());
