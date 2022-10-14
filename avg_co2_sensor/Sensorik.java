@@ -46,7 +46,7 @@ public class Sensorik {
 	
 	public void simulateOneMinute() throws JMSException {
 		if (openWindow) {
-			co2_ppm = co2_ppm - 100;
+			co2_ppm = co2_ppm - 90;
 			if (co2_ppm < 420) {
 				co2_ppm = 420;
 			}
@@ -60,7 +60,7 @@ public class Sensorik {
 		System.out.println(this.name + ": One Minute passed. New Value = " + co2_ppm);
 	}
 	
-	public static int co2prokopf = 25;
+	public static int co2prokopf = 20;
 	
 	
 }

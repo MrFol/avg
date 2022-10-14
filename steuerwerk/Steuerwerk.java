@@ -31,10 +31,10 @@ public class Steuerwerk {
  					TextMessage textmessageProduce = session.createTextMessage("" + OPEN);
  					producers.get(i).send(textmessageProduce);
  				}
- 				//else {
- 				//	TextMessage textmessageProduce = session.createTextMessage("" + CLOSE);
- 				//	producers.get(i).send(textmessageProduce);
- 				//}
+ 				else if (value == 420) {
+ 					TextMessage textmessageProduce = session.createTextMessage("" + CLOSE);
+ 					producers.get(i).send(textmessageProduce);
+ 				}
  			}
  		}
 	}

@@ -13,6 +13,7 @@ import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import aktor.Aktor;
 import avg_co2_sensor.Sensorik;
 import steuerwerk.Steuerwerk;
 
@@ -22,8 +23,9 @@ public class Simulation {
 	private Connection connection;
 	private Session session;
 	private Session sessionSteuerwerk;
-	
+	private Session sessionAktor;
 	LinkedList<Sensorik> sensoren = new LinkedList<Sensorik>();
+	LinkedList<Aktor> aktoren = new LinkedList<Aktor>();
 	Steuerwerk steuerwerk;
 	
 	public Simulation(String url) throws JMSException {
@@ -36,15 +38,27 @@ public class Simulation {
 		
 		this.sessionSteuerwerk = connection.createSession(false,
                 Session.AUTO_ACKNOWLEDGE); 
+		
+		this.sessionAktor = connection.createSession(false,
+                Session.AUTO_ACKNOWLEDGE); 
 	}
 	
-	public void addSensoren(String[] subject, int[] anzahl_studis) throws JMSException {
-        for(int i = 0; i < subject.length; i++) {
-        	Destination destination = session.createQueue(subject[i]);
+	public void addSensoren(String[] name, int[] anzahl_studis) throws JMSException {
+        for(int i = 0; i < name.length; i++) {
+        	Destination destination = session.createQueue(name[i]);
         	MessageProducer producer = session.createProducer(destination);
-        	Sensorik sensorik = new Sensorik(subject[i], session, producer, anzahl_studis[i]);
+        	Sensorik sensorik = new Sensorik(name[i], session, producer, anzahl_studis[i]);
         	sensoren.add(sensorik);
         }
+	}
+	
+	public void addAktoren(String[] name) throws JMSException {
+		for (int i = 0; i< name.length; i++) {
+			Destination destination = sessionAktor.createQueue(name[i]);
+			MessageConsumer consumer = sessionAktor.createConsumer(destination);
+			Aktor aktor = new Aktor(name[i], consumer);
+			aktoren.add(aktor);
+		}
 	}
 	
 	public void addSteuerwerk(String[] producers, String[] consumers) throws JMSException {
@@ -67,6 +81,10 @@ public class Simulation {
         	sensoren.get(t).simulateOneMinute();
         }
 		steuerwerk.simulateOneMinute();
+		for (int t = 0; t < aktoren.size(); t++) {
+			boolean isOpen = aktoren.get(t).simulateOneMinute();
+			sensoren.get(t).setWindow(isOpen);
+		}
 	}
 	
 	public void closeConnection() throws JMSException {
